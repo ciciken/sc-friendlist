@@ -1,28 +1,32 @@
 sc-friendlist
 =============
 
-First Pass Naive Method
+first pass naive method
 ========
 
-Mapper
-===
+init_mapper
+====
 
-    k os a number <= n.  n will be controlled outside of this program
-    by how many times this program is called in the pipeline.
+  input is a list of tab separated pair of names.
 
-    input is a list where first token is the namekey amd each subsequent token
-    represents friends at the k degree level where k is the index of the tab
-    separated line.  these friend tokens may be a csv string representing many
-    friends at the k degree or a single string at the k degree
-    representing one friend.
+  init_mapper will create a map of each unique name as key and a csv string of first degree friends as value.
 
-    for each namekey, determine maxk and map a list of friends at the maxk+1
-    degree. maxk is determined as last tab separated token.
+  output is a list of tap separate pair of strings where first string is the namekey and the second string is a csv string of name key's first degree friends.
 
-    output is a list that matches the rules of the input.
+  output can be read by a reducer or inner_mapper to find next degree friends.
 
-    output can be read by a reducer or this mapper again to find next degree friends.
+inner_mapper
+====
 
-    reducer can take care of sorting and duplicates.
+  input is a list of tab separated pair of strings.  the first string is the name key and the second string is a friendlist represented by a csv string of k degree friends.
 
+  inner_mapper will add k+1 degree friends to the friendlist for each name key.
 
+  output follows the same rules as the input for k+1 degree friends.  it can be read by a reducer or inner_mapper again to find next degree friends.
+
+reducer
+====
+
+  input is a list of tab separated pair of strings.  the first string is the name key and the second string is a friendlist represented by a csv string of k degree friends.
+
+  reducer will accumulate friend lists in a local output file… need to look into best thread safe solution here.
