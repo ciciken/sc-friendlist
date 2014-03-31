@@ -3,9 +3,21 @@ sc-friendlist
 
 ## Intro
   
-  This is my solution to finding 1 to n degree friends given a list of relationships.  
+  This is my solution to finding 1 to n degree friends given an adjacency list of friendships.  I used c++ which was the fastest / most convenient dev env at my disposal, but c++ is not my strongest language.
 
-  The problem initially seems like a graph traversal problem for which we can do BFS using recursion and multithreading.  In order to take advantage of Hadoop distribution processing across machines and horizontal scaling (instead of coming up with my own messaging protocol solution between machines ) I will go with the map reduce approach.
+#### Approach
+
+  The problem initially seems like a graph traversal problem for which we can do BFS using recursion and multithreading.  In order to take advantage of Hadoop distribution processing across machines and horizontal scaling (instead of coming up with my own messaging protocol solution between machines ) I will go with the map reduce approach to fit with Hadoop.
+
+  I will break down the steps into four programs: init_mapper, inner_mapper, inner_reducer, and final_reducer.  Each program is intended to be able to run in a distributed manner (some caveats with the reducers and accumulation as explained later).
+
+  init_mapper will read the adjacency list input and output a matrix map of unique nodes (names) to each node's first degree friends.  The final_reducer can be run at this point to display the desired results.  
+
+  For any subsequent iterations of n, you can run the inner_reducer and then inner_mapper.  inner_reducer takes in distributed outputs of init_mapper or inner_mapper and accumulates list of friends for each unique node.  inner_mapper will expand each node's list of friends to the next degree.
+
+  The final_reducer will accumulate same as inner_reducer, but output a sorted list of unique friends from 1 to the latest degree.
+
+#### Running it
 
   The solution I came up with requires multiple map reduce jobs chained together for each iteration of n.  From my quick research it seems the hadoop streaming API requires additional framework to allow chaining together of map reduce jobs.  For simplification I will test using the command line pipe method as suggested in the initial problem spec. 
 
@@ -19,23 +31,15 @@ sc-friendlist
 
   cat input.txt | ./init_mapper | ./inner_reducer | ./inner_mapper | ./inner_reducer | ./inner_mapper | ./reducer | sort -k1,1
 
-  For this method of testing, the reducers here will just cout instead of accumulating in a global file.  When testing on the command line using pipes, the tasks aren't actually distributed and all data will have passed through the reducers, thus properly accumulating.  This is in place of all distributed data passing through to a global accumulator.   
+  For this method of testing, I am not sure how to simulate reducing to a global accumulation file for each name.  Instead, I have the reducers simply cout their local reductions.  When testing on the command line using pipes, the tasks aren't actually distributed and all data will have passed through the reducers, thus properly accumulating.  This is in place of all distributed data passing through to global accumulators and subsequent mapper reading from a global accumulators.
 
-  I am not sure how the different solutions of chaining together map reduce jobs using hadoop streaming API expects input and output to be but I assume the intermediate / inner reducers need to output data that another mapper can take as input, otherwise the inner mappers will need to read from global accumulation files, perhaps from from HDFS.  
+  My reducers won't work in accumulating distributed input, but again, I'm not sure how to get around this using pipes.
 
-  Please let me know if my assumption is incorrect and if my solution is insufficiently portable to a proper Hadoop chained map reduce solution.
+  I am not sure how the different solutions of chaining together map reduce jobs using hadoop streaming API handles input and output, but I think the intermediate reducers write to a global accumulator in HDFS which is then distributed out again to subsequent mappers.  Hopefully my understanding of this is correct and sufficient to overlook my workaround.
 
 ## Solution
 
-  In order to take advantage of the distributive power of hadoop we need to break down into separate data chunks that can be worked on in a pipeline.
-
   The problem can be mapped to represent a graph i.e. a node and its children nodes.  One way to marshal a node here for our purposes is like so - 
-
-"name	1stdegfrnd,1stdegfrnd,1stdegfrnd,"
-
- - a tap separated pair of strings where the first string is a name and the second string is a csv string of names that are the first degree friends, or the children of this node.  
-
-  It is also useful to track previously traversed nodes, captured like so - 
 
 "name	1stdegfrnd	2nddegfrnd,3rddegfrnd,	4rthdegfrnd,4rthdegfrnd,"
 
