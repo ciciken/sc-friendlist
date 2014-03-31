@@ -62,8 +62,8 @@ int main()
         for (int j=0; j < children.size() ; ++j ) {
 
           // check if child is in previously traversed
-          if (children[0] != name &&
-            std::find(traversed.begin(), traversed.end(), children[0]) == traversed.end() ) {
+          if (children[j] != name &&
+            std::find(traversed.begin(), traversed.end(), children[j]) == traversed.end() ) {
             // add to k+1 list
             fmap[name].k1degree.insert(children[j]);
           }
@@ -71,23 +71,29 @@ int main()
     }
   }
 
-  // output the names with k degree friends added to previously traversed list and with the k+1 friends
-  // added for the next k degree friend iteration
+  // output the names with k degree friends added to previously traversed list
+  // and with the k+1 friends set to be the next k degree friend iteration
   for (cicimap::iterator im = fmap.begin(); im != fmap.end(); ++im) {
-    cout << im->first << '\t' << im->second.onedegreestr << '\t' << im->second.prevdegreestr;
-
-    // append the k degree friends to traversed list avoiding duplicates
     friends f = im->second;
-    for ( int i=0; i<f.kdegree.size(); ++i) {
-        if (std::find(f.prevdegree.begin(), f.prevdegree.end(), f.kdegree[i]) == f.prevdegree.end() ) {
-            cout << f.kdegree[i] << ',';
-        }
-    }
 
-    // now add the k+1 degree friends
-    cout << '\t';
-    for (unordered_set<string>::iterator i = f.k1degree.begin(); i != f.k1degree.end(); ++i) {
-        cout << *i << ",";
+    cout << im->first << '\t' << f.onedegreestr << '\t' << f.prevdegreestr;
+
+    if (f.k1degree.empty()) {
+        cout << '\t' << f.kdegreestr; // if no new k1degree friends, keep things same
+    } else {
+
+        // append the k degree friends to traversed list avoiding duplicates
+        for ( int i=0; i<f.kdegree.size(); ++i) {
+          if (std::find(f.prevdegree.begin(), f.prevdegree.end(), f.kdegree[i]) == f.prevdegree.end() ) {
+            cout << f.kdegree[i] << ',';
+          }
+        }
+
+        // now add the k+1 degree friends
+        cout << '\t';
+        for (unordered_set<string>::iterator i = f.k1degree.begin(); i != f.k1degree.end(); ++i) {
+          cout << *i << ",";
+        }
     }
 
     cout << endl;
