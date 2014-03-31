@@ -31,9 +31,9 @@ sc-friendlist
 
 	cat input.txt | ./init_mapper | ./inner_reducer | ./inner_mapper | ./inner_reducer | ./inner_mapper | ./reducer | sort -k1,1
 
-  For this method of testing, I am not sure how to simulate reducing to a global accumulation file for each name.  Instead, I have the reducers simply cout their local reductions.  When testing on the command line using pipes, the tasks aren't actually distributed and all data will have passed through the reducers, thus properly accumulating.  This is in place of all distributed data passing through to global accumulators and subsequent mapper reading from a global accumulators.
+  For this method of testing, I am not sure how to simulate reducing to a global accumulation file for each name.  Instead, I have the reducers simply cout their local reductions.  When testing on the command line using pipes, the tasks aren't actually distributed and all data will have passed through the reducers, thus properly accumulating.  This is in place of all distributed data passing through reducers to global accumulators and subsequent mappers reading from these global accumulators.
 
-  My reducers won't work in accumulating distributed input, but again, I'm not sure how to get around this using pipes.
+  My reducers right now won't work in accumulating distributed input, but again, I'm not sure how to get around this using pipes.
 
   I am not sure how the different solutions of chaining together map reduce jobs using hadoop streaming API handles input and output, but I think the intermediate reducers write to a global accumulator in HDFS which is then distributed out again to subsequent mappers.  Hopefully my understanding of this is correct and sufficient to overlook my workaround.
 
