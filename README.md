@@ -3,7 +3,7 @@ sc-friendlist
 
 ## Intro
   
-  This is my solution to finding 1 to n degree friends given an adjacency list of friendships.  I used c++ which was the fastest / most convenient dev env at my disposal, but c++ is not my strongest language.
+  This is my solution to finding 1 to n degree friends given an adjacency list of friendships.  I used c++ which was the fastest / most convenient dev env at my disposal.
 
 #### Approach
 
