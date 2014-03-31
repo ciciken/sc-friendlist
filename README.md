@@ -41,7 +41,7 @@ sc-friendlist
 
   The problem can be mapped to represent a graph i.e. a node and its children nodes.  One way to marshal a node here for our purposes is like so - 
 
-"name	1stdegfrnd	2nddegfrnd,3rddegfrnd,	4rthdegfrnd,4rthdegfrnd,"
+	name	1stdegfrnd	2nddegfrnd,3rddegfrnd,	4rthdegfrnd,4rthdegfrnd,
 
  - where the first string is the current node name, the second string is the list of 1st degree friends (the children of the current node), the third string is the list of 1 to k-1 degree friends (previously traversed nodes), and the fourth string is the list of current k degree friends.  It is from these k degree friends that the next iteration will require children friends (the k+1 degree friends).
 
