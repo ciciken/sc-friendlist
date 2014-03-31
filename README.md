@@ -112,7 +112,7 @@ For each program, |V| and |E| may be the distributed sub count of the total inpu
   The rest of the programs take input as the list of marshalled nodes, which number |V|.  Inner_mapper traverses through each node and then again through each k degree friend.  The reducers traverse through each node's k degree friends as well in order to accumulate.  Worst case scenario every person is or eventually is friends with everyone else after some iterations, and has |V| friends to traverse from then on, and thus time complexity is O(|V|^2)
 
 
-## Correctness
+#### Correctness
 
 Correctness is ensured because of reduction between each map step.
 
