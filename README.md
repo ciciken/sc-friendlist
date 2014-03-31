@@ -25,11 +25,11 @@ sc-friendlist
 
   for 1 degree friends (1 mapper and 1 reducer is called)
 
-  cat input.txt | ./init_mapper | ./reducer | sort -k1,1
+	cat input.txt | ./init_mapper | ./reducer | sort -k1,1
 
   for 3 degree friends (3 mappers and 3 reducers are called)
 
-  cat input.txt | ./init_mapper | ./inner_reducer | ./inner_mapper | ./inner_reducer | ./inner_mapper | ./reducer | sort -k1,1
+	cat input.txt | ./init_mapper | ./inner_reducer | ./inner_mapper | ./inner_reducer | ./inner_mapper | ./reducer | sort -k1,1
 
   For this method of testing, I am not sure how to simulate reducing to a global accumulation file for each name.  Instead, I have the reducers simply cout their local reductions.  When testing on the command line using pipes, the tasks aren't actually distributed and all data will have passed through the reducers, thus properly accumulating.  This is in place of all distributed data passing through to global accumulators and subsequent mapper reading from a global accumulators.
 
