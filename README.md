@@ -39,11 +39,15 @@ sc-friendlist
 
 ## Solution
 
-  The problem can be mapped to represent a graph i.e. a node and its children nodes.  One way to marshal a node here for our purposes is like so - 
+  The problem can be mapped to represent a graph i.e. a node and its children nodes.  One way to marshal a node here for our purposes is like so 
 
 	name	1stdegfrnd	2nddegfrnd,3rddegfrnd,	4rthdegfrnd,4rthdegfrnd,
 
- - where the first string is the current node name, the second string is the list of 1st degree friends (the children of the current node), the third string is the list of 1 to k-1 degree friends (previously traversed nodes), and the fourth string is the list of current k degree friends.  It is from these k degree friends that the next iteration will require children friends (the k+1 degree friends).
+  a tab separated list of strings where 
+  - the first string is the current node name, 
+  - the second string is the csv list of 1st degree friends (the children of the current node)
+  - the third string is the csv list of 1 to k-1 degree friends (previously traversed nodes)
+  - the fourth string is the csv list of current k degree friends.  It is from these k degree friends that the next iteration ( of k+1 degree friends) will be formed from their children
 
 #### init_mapper
 
@@ -84,9 +88,10 @@ sc-friendlist
 ## Analysis
 
 Assuming 
-1. |V| is the number of people (vertices) 
-2. |E| is the number of friendships between two people (edges).
-3. k is the number iterations so far (degree of friends we have accumulated)
+
+ - |V| is the number of people (vertices) 
+ - |E| is the number of friendships between two people (edges).
+ - k is the number iterations so far (degree of friends we have accumulated)
 
 For each program, |V| and |E| may be the distributed sub count of the total input.
 
